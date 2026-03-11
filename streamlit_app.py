@@ -11,30 +11,9 @@ st.sidebar.title("⚔️ Edge Quest")
 # Upload trade log
 uploaded_file = st.sidebar.file_uploader(
     "Upload Trade Log",
-    type=["csv"],
-    key="trade_upload"
-)
+ if df is not None:
 
-df = None
-
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    df["Equity"] = df["R"].cumsum()
-    peak = df["Equity"].cummax()
-    df["Drawdown"] = df["Equity"] - peak
-if df is not None:
-
-st.set_page_config(page_title="Edge Quest Dashboard", layout="wide")
-
-st.title("⚔️ Edge Quest Trading Dashboard")
-
-st.write("Upload a trade log to analyze your performance.")
-
-uploaded_file = st.file_uploader("Upload Trade Log CSV", type=["csv"])
-
-if uploaded_file:
-
-    df = pd.read_csv(uploaded_file)
+    st.title("⚔️ Edge Quest Trading Dashboard")
 
     st.subheader("Trade Log")
     st.dataframe(df)
@@ -77,17 +56,21 @@ if uploaded_file:
     # MAE vs MFE
     if "MAE" in df.columns and "MFE" in df.columns:
 
-        st.subheader("MAE vs MFE")
+        st.subheader("Trade Efficiency")
 
         fig3 = px.scatter(
             df,
             x="MAE",
             y="MFE",
-            color="R",
-            title="Trade Efficiency"
+            color="R"
         )
 
         st.plotly_chart(fig3, use_container_width=True)
+
+else:
+
+    st.title("⚔️ Edge Quest Trading Dashboard")
+    st.write("Upload a trade log to analyze your performance.")
 
     # -----------------------------
     # EDGE QUEST TILT METER
