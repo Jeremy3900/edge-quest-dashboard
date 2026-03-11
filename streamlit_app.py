@@ -9,11 +9,12 @@ st.set_page_config(page_title="Edge Quest", layout="wide")
 st.sidebar.title("⚔️ Edge Quest")
 
 # Upload trade log
+st.sidebar.title("⚔️ Edge Quest")
+
 uploaded_file = st.sidebar.file_uploader(
     "Upload Trade Log",
- if df is not None:
-
-    st.title("⚔️ Edge Quest Trading Dashboard")
+    type=["csv"]
+)
 
     st.subheader("Trade Log")
     st.dataframe(df)
