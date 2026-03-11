@@ -4,8 +4,7 @@ import plotly.express as px
 import numpy as np
 
 st.set_page_config(page_title="Edge Quest", layout="wide")
-
-st.sidebar.image(20230812_202115_0000.png", width=200)
+st.sidebar.image("20230812_202115_0000.png", width=200)
 st.sidebar.title("Edge Quest")
 
 uploaded_file = st.sidebar.file_uploader(
