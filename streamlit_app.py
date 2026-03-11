@@ -5,7 +5,8 @@ import numpy as np
 
 st.set_page_config(page_title="Edge Quest", layout="wide")
 
-st.sidebar.title("⚔️ Edge Quest")
+st.sidebar.image("edgequest_logo.png", width=200)
+st.sidebar.title("Edge Quest")
 
 uploaded_file = st.sidebar.file_uploader(
     "Upload Trade Log",
