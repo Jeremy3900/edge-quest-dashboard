@@ -26,3 +26,13 @@ if file:
 
     st.subheader("Equity Curve")
     st.line_chart(equity)
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric("Total R", "0.0")
+col2.metric("Win Rate", "0%")
+col3.metric("Expectancy", "0.0R")
+
+st.subheader("Equity Curve")
+
+st.line_chart([0])
