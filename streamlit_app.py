@@ -22,6 +22,7 @@ if uploaded_file:
     df["Equity"] = df["R"].cumsum()
     peak = df["Equity"].cummax()
     df["Drawdown"] = df["Equity"] - peak
+if df is not None:
 
 st.set_page_config(page_title="Edge Quest Dashboard", layout="wide")
 
@@ -182,12 +183,11 @@ if df is not None:
         st.warning("Risk Status: Elevated")
     else:
         st.error("Risk Status: Danger Zone")
-# -----------------------------
-# R DISTRIBUTION
-# -----------------------------
-
 if df is not None:
 
+    # -----------------------------
+    # R DISTRIBUTION
+    # -----------------------------
     st.subheader("📊 R Distribution")
 
     fig_hist = px.histogram(
@@ -198,28 +198,29 @@ if df is not None:
     )
 
     st.plotly_chart(fig_hist, use_container_width=True)
-# -----------------------------
-# DRAWDOWN DURATION
-# -----------------------------
 
-st.subheader("📉 Drawdown Duration")
 
-drawdown_periods = (df["Drawdown"] < 0).astype(int)
+    # -----------------------------
+    # DRAWDOWN DURATION
+    # -----------------------------
+    st.subheader("📉 Drawdown Duration")
 
-duration = []
-count = 0
+    drawdown_periods = (df["Drawdown"] < 0).astype(int)
 
-for d in drawdown_periods:
-    if d == 1:
-        count += 1
-    else:
-        if count > 0:
-            duration.append(count)
-            count = 0
+    duration = []
+    count = 0
 
-if duration:
-    st.write("Longest Drawdown (Trades):", max(duration))
-    st.write("Average Drawdown Length:", round(sum(duration)/len(duration),2))
+    for d in drawdown_periods:
+        if d == 1:
+            count += 1
+        else:
+            if count > 0:
+                duration.append(count)
+                count = 0
+
+    if duration:
+        st.write("Longest Drawdown (Trades):", max(duration))
+        st.write("Average Drawdown Length:", round(sum(duration)/len(duration),2))
 # -----------------------------
 # ADVANCED TILT DETECTION
 # -----------------------------
