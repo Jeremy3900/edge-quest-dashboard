@@ -97,7 +97,7 @@ else:
 # Risk Guardian
 # -----------------------------
 
-if "Drawdown" in df.columns:
+if uploaded_file is not None and "Drawdown" in df.columns:
 
     st.subheader("🛡 Risk Guardian")
 
