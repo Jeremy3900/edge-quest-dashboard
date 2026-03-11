@@ -81,6 +81,18 @@ else:
 
         # Efficiency
         if "MAE" in df.columns and "MFE" in df.columns:
+
+
+            st.subheader("Trade Efficiency")
+
+            fig_eff = px.scatter(
+                df,
+                x="MAE",
+                y="MFE",
+                color="R"
+            )
+
+            st.plotly_chart(fig_eff, use_container_width=True)
 # -----------------------------
 # Risk Guardian
 # -----------------------------
@@ -109,14 +121,3 @@ elif risk_percent < 0.8:
     st.warning("Risk Status: Elevated")
 else:
     st.error("Risk Status: Danger Zone")
-
-            st.subheader("Trade Efficiency")
-
-            fig_eff = px.scatter(
-                df,
-                x="MAE",
-                y="MFE",
-                color="R"
-            )
-
-            st.plotly_chart(fig_eff, use_container_width=True)
