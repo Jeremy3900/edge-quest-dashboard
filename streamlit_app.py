@@ -2,20 +2,26 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title="Edge Quest Dashboard", layout="wide")
+st.set_page_config(page_title="Edge Quest", layout="wide")
 
-st.title("⚔️ Edge Quest Trading Dashboard")
+# Sidebar logo
+st.sidebar.image("edgequest_logo.png", width=200)
+st.sidebar.title("⚔️ Edge Quest")
 
-st.write("Upload a trade log to analyze your performance.")
+# Upload trade log
+uploaded_file = st.sidebar.file_uploader(
+    "Upload Trade Log",
+    type=["csv"],
+    key="trade_upload"
+)
 
-uploaded_file = st.file_uploader("Upload Trade Log CSV", type=["csv"], key="trade_upload")
+df = None
 
 if uploaded_file:
-
     df = pd.read_csv(uploaded_file)
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+    df["Equity"] = df["R"].cumsum()
+    peak = df["Equity"].cummax()
+    df["Drawdown"] = df["Equity"] - peak
 
 st.set_page_config(page_title="Edge Quest Dashboard", layout="wide")
 
