@@ -81,6 +81,34 @@ else:
 
         # Efficiency
         if "MAE" in df.columns and "MFE" in df.columns:
+# -----------------------------
+# Risk Guardian
+# -----------------------------
+
+st.subheader("🛡 Risk Guardian")
+
+max_allowed_drawdown = -10  # adjust this rule
+
+current_drawdown = df["Drawdown"].min()
+
+remaining_risk = max_allowed_drawdown - current_drawdown
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
+col2.metric("Current DD", round(current_drawdown,2))
+col3.metric("Remaining Risk", round(remaining_risk,2))
+
+risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
+
+st.progress(int(risk_percent * 100))
+
+if risk_percent < 0.5:
+    st.success("Risk Status: Safe")
+elif risk_percent < 0.8:
+    st.warning("Risk Status: Elevated")
+else:
+    st.error("Risk Status: Danger Zone")
 
             st.subheader("Trade Efficiency")
 
