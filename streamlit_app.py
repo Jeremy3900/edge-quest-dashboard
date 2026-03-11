@@ -332,3 +332,34 @@ if "Date" in df.columns:
     )
 
     st.plotly_chart(fig_week, use_container_width=True)
+# -----------------------------
+# EDGE EFFICIENCY ENGINE
+# -----------------------------
+
+if "MFE" in df.columns and "MAE" in df.columns:
+
+    st.subheader("⚙️ Edge Efficiency Engine")
+
+    avg_mfe = df["MFE"].mean()
+    avg_mae = df["MAE"].mean()
+    avg_r = df["R"].mean()
+
+    capture_ratio = avg_r / avg_mfe if avg_mfe != 0 else 0
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Avg MFE", round(avg_mfe,2))
+    col2.metric("Avg MAE", round(avg_mae,2))
+    col3.metric("Capture Ratio", round(capture_ratio,2))
+
+    st.write("Capture Ratio shows how much of the available move you capture.")
+
+    fig_eff = px.scatter(
+        df,
+        x="MAE",
+        y="MFE",
+        color="R",
+        title="Trade Efficiency Map"
+    )
+
+    st.plotly_chart(fig_eff, use_container_width=True)
