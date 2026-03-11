@@ -5,11 +5,13 @@ st.set_page_config(page_title="Edge Quest Dashboard", layout="wide")
 
 st.title("Edge Quest Trading Dashboard")
 
-file = st.file_uploader("Upload Trade Log", type=["csv"])
+st.write("Upload a trade log to analyze your performance.")
 
-if file:
+uploaded_file = st.file_uploader("Upload Trade Log CSV", type=["csv"])
 
-    df = pd.read_csv(file)
+if uploaded_file:
+
+    df = pd.read_csv(uploaded_file)
 
     st.subheader("Trade Log")
     st.dataframe(df)
@@ -17,22 +19,19 @@ if file:
     total_r = df["R"].sum()
     win_rate = (df["R"] > 0).mean() * 100
 
-    equity = df["R"].cumsum()
+    avg_win = df[df["R"] > 0]["R"].mean()
+    avg_loss = df[df["R"] < 0]["R"].mean()
 
-    col1, col2 = st.columns(2)
+    expectancy = (win_rate/100 * avg_win) + ((1 - win_rate/100) * avg_loss)
+
+    col1, col2, col3 = st.columns(3)
 
     col1.metric("Total R", round(total_r,2))
     col2.metric("Win Rate", f"{win_rate:.1f}%")
+    col3.metric("Expectancy", round(expectancy,2))
 
     st.subheader("Equity Curve")
+
+    equity = df["R"].cumsum()
+
     st.line_chart(equity)
-
-col1, col2, col3 = st.columns(3)
-
-col1.metric("Total R", "0.0")
-col2.metric("Win Rate", "0%")
-col3.metric("Expectancy", "0.0R")
-
-st.subheader("Equity Curve")
-
-st.line_chart([0])
