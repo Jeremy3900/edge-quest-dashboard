@@ -8,7 +8,7 @@ st.title("⚔️ Edge Quest Trading Dashboard")
 
 st.write("Upload a trade log to analyze your performance.")
 
-uploaded_file = st.file_uploader("Upload Trade Log CSV", type=["csv"])
+uploaded_file = st.file_uploader("Upload Trade Log CSV", type=["csv"], key="trade_upload")
 
 if uploaded_file:
 
