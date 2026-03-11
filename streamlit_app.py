@@ -185,6 +185,7 @@ if df is not None:
 # -----------------------------
 # R DISTRIBUTION
 # -----------------------------
+
 if df is not None:
 
     st.subheader("📊 R Distribution")
@@ -192,11 +193,11 @@ if df is not None:
     fig_hist = px.histogram(
         df,
         x="R",
-    nbins=20,
-    title="Distribution of R per Trade"
-)
+        nbins=20,
+        title="Distribution of R per Trade"
+    )
 
-st.plotly_chart(fig_hist, use_container_width=True)
+    st.plotly_chart(fig_hist, use_container_width=True)
 # -----------------------------
 # DRAWDOWN DURATION
 # -----------------------------
