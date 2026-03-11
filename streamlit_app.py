@@ -97,27 +97,29 @@ else:
 # Risk Guardian
 # -----------------------------
 
-st.subheader("🛡 Risk Guardian")
+if "Drawdown" in df.columns:
 
-max_allowed_drawdown = -10  # adjust this rule
+    st.subheader("🛡 Risk Guardian")
 
-current_drawdown = df["Drawdown"].min()
+    max_allowed_drawdown = -10
 
-remaining_risk = max_allowed_drawdown - current_drawdown
+    current_drawdown = df["Drawdown"].min()
 
-col1, col2, col3 = st.columns(3)
+    remaining_risk = max_allowed_drawdown - current_drawdown
 
-col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
-col2.metric("Current DD", round(current_drawdown,2))
-col3.metric("Remaining Risk", round(remaining_risk,2))
+    col1, col2, col3 = st.columns(3)
 
-risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
+    col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
+    col2.metric("Current DD", round(current_drawdown,2))
+    col3.metric("Remaining Risk", round(remaining_risk,2))
 
-st.progress(int(risk_percent * 100))
+    risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
 
-if risk_percent < 0.5:
-    st.success("Risk Status: Safe")
-elif risk_percent < 0.8:
-    st.warning("Risk Status: Elevated")
-else:
-    st.error("Risk Status: Danger Zone")
+    st.progress(int(risk_percent * 100))
+
+    if risk_percent < 0.5:
+        st.success("Risk Status: Safe")
+    elif risk_percent < 0.8:
+        st.warning("Risk Status: Elevated")
+    else:
+        st.error("Risk Status: Danger Zone")
