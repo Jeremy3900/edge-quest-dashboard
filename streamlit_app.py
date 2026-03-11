@@ -158,8 +158,9 @@ if df is not None and "Setup" in df.columns:
 
 st.subheader("🛡 Risk Guardian")
 if df is not None and "Drawdown" not in df.columns:
-    if "R" in df.columns:
+if "R" in df.columns:
     df["Equity"] = df["R"].cumsum()
+
 elif "PnL" in df.columns:
     df["Equity"] = df["PnL"].cumsum()
     df["Drawdown"] = df["Equity"] - df["Equity"].cummax()
