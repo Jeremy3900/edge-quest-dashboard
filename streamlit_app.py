@@ -157,7 +157,7 @@ if df is not None and "Setup" in df.columns:
 # -----------------------------
 
 st.subheader("🛡 Risk Guardian")
-if "Drawdown" not in df.columns:
+if df is not None and "Drawdown" not in df.columns:
     df["Equity"] = df["PnL"].cumsum()
     df["Drawdown"] = df["Equity"] - df["Equity"].cummax()
 # Create equity curve from PnL
