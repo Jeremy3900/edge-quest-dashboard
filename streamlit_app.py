@@ -5,7 +5,7 @@ import plotly.express as px
 st.set_page_config(page_title="Edge Quest", layout="wide")
 
 # Sidebar logo
-st.sidebar.image("edgequest_logo.png", width=200)
+# st.sidebar.image("edgequest_logo.png", width=200)
 st.sidebar.title("⚔️ Edge Quest")
 
 # Upload trade log
