@@ -156,50 +156,42 @@ if df is not None and "Setup" in df.columns:
 # EDGE QUEST RISK GUARDIAN
 # -----------------------------
 
-st.subheader("🛡 Risk Guardian")
-if df is not None and "Drawdown" not in df.columns:
-if "R" in df.columns:
-    df["Equity"] = df["R"].cumsum()
+if df is not None:
 
-elif "PnL" in df.columns:
-    df["Equity"] = df["PnL"].cumsum()
-    df["Drawdown"] = df["Equity"] - df["Equity"].cummax()
-# Create equity curve from PnL
-df["Equity"] = df["PnL"].cumsum()
+    st.subheader("🛡 Risk Guardian")
 
-# Calculate drawdown
-df["Drawdown"] = df["Equity"] - df["Equity"].cummax()
-max_allowed_drawdown = -10  # change this to your rule
+    max_allowed_drawdown = -10  # change this rule if needed
 
-current_drawdown = df["Drawdown"].min()
+    current_drawdown = df["Drawdown"].min()
 
-remaining_risk = max_allowed_drawdown - current_drawdown
+    remaining_risk = max_allowed_drawdown - current_drawdown
 
-col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
 
-col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
-col2.metric("Current DD", f"{round(current_drawdown,2)}R")
-col3.metric("Remaining Risk", f"{round(remaining_risk,2)}R")
+    col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
+    col2.metric("Current DD", f"{round(current_drawdown,2)}R")
+    col3.metric("Remaining Risk", f"{round(remaining_risk,2)}R")
 
-risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
+    risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
 
-st.progress(int(risk_percent * 100))
+    st.progress(int(risk_percent * 100))
 
-if risk_percent < 0.5:
-    st.success("Risk Status: Safe")
-elif risk_percent < 0.8:
-    st.warning("Risk Status: Elevated")
-else:
-    st.error("Risk Status: Danger Zone")
+    if risk_percent < 0.5:
+        st.success("Risk Status: Safe")
+    elif risk_percent < 0.8:
+        st.warning("Risk Status: Elevated")
+    else:
+        st.error("Risk Status: Danger Zone")
 # -----------------------------
 # R DISTRIBUTION
 # -----------------------------
+if df is not None:
 
-st.subheader("📊 R Distribution")
+    st.subheader("📊 R Distribution")
 
-fig_hist = px.histogram(
-    df,
-    x="R",
+    fig_hist = px.histogram(
+        df,
+        x="R",
     nbins=20,
     title="Distribution of R per Trade"
 )
