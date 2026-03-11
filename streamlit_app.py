@@ -14,7 +14,7 @@ uploaded_file = st.sidebar.file_uploader(
 
 if uploaded_file is None:
 
-    st.title("⚔️ Edge Quest Trading Dashboard")
+    st.title("20230812_202115_0000.png")
     st.write("Upload a trade log to begin.")
 
 else:
