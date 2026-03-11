@@ -248,3 +248,87 @@ elif tilt_score < 60:
     st.warning("Psychological State: Elevated")
 else:
     st.error("Psychological State: High Risk")
+# -----------------------------
+# EXPECTANCY OVER TIME
+# -----------------------------
+
+st.subheader("📈 Expectancy Curve")
+
+rolling_window = 20
+
+df["Rolling Expectancy"] = df["R"].rolling(rolling_window).mean()
+
+fig_expectancy = px.line(
+    df,
+    y="Rolling Expectancy",
+    title="Rolling Expectancy (20 Trades)"
+)
+
+st.plotly_chart(fig_expectancy, use_container_width=True)
+# -----------------------------
+# MONTE CARLO SIMULATION
+# -----------------------------
+
+st.subheader("🎲 Monte Carlo Risk Simulation")
+
+import numpy as np
+
+simulations = 100
+trades = len(df)
+
+equity_paths = []
+
+for i in range(simulations):
+
+    sample = np.random.choice(df["R"], trades)
+
+    equity = np.cumsum(sample)
+
+    equity_paths.append(equity)
+
+mc_df = pd.DataFrame(equity_paths).T
+
+fig_mc = px.line(
+    mc_df,
+    title="Monte Carlo Equity Simulations"
+)
+
+st.plotly_chart(fig_mc, use_container_width=True)
+# -----------------------------
+# DISCIPLINE SCORE
+# -----------------------------
+
+st.subheader("🧠 Discipline Score")
+
+rule_breaks = (df["R"] < -3).sum()
+
+discipline_score = 100 - (
+    rule_breaks * 10 +
+    abs(df["Drawdown"].min()) * 2
+)
+
+discipline_score = max(discipline_score, 0)
+
+st.metric("Discipline Score", round(discipline_score,1))
+# -----------------------------
+# WEEKLY REVIEW
+# -----------------------------
+
+st.subheader("📅 Weekly Review")
+
+if "Date" in df.columns:
+
+    df["Date"] = pd.to_datetime(df["Date"])
+
+    df["Week"] = df["Date"].dt.isocalendar().week
+
+    weekly = df.groupby("Week")["R"].sum().reset_index()
+
+    fig_week = px.bar(
+        weekly,
+        x="Week",
+        y="R",
+        title="Weekly Performance"
+    )
+
+    st.plotly_chart(fig_week, use_container_width=True)
