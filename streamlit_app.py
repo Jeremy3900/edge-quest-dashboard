@@ -146,3 +146,105 @@ if "Setup" in df.columns:
     )
 
     st.plotly_chart(fig_setup, use_container_width=True)
+# -----------------------------
+# EDGE QUEST RISK GUARDIAN
+# -----------------------------
+
+st.subheader("🛡 Risk Guardian")
+
+max_allowed_drawdown = -10  # change this to your rule
+
+current_drawdown = df["Drawdown"].min()
+
+remaining_risk = max_allowed_drawdown - current_drawdown
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
+col2.metric("Current DD", f"{round(current_drawdown,2)}R")
+col3.metric("Remaining Risk", f"{round(remaining_risk,2)}R")
+
+risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
+
+st.progress(int(risk_percent * 100))
+
+if risk_percent < 0.5:
+    st.success("Risk Status: Safe")
+elif risk_percent < 0.8:
+    st.warning("Risk Status: Elevated")
+else:
+    st.error("Risk Status: Danger Zone")
+# -----------------------------
+# R DISTRIBUTION
+# -----------------------------
+
+st.subheader("📊 R Distribution")
+
+fig_hist = px.histogram(
+    df,
+    x="R",
+    nbins=20,
+    title="Distribution of R per Trade"
+)
+
+st.plotly_chart(fig_hist, use_container_width=True)
+# -----------------------------
+# DRAWDOWN DURATION
+# -----------------------------
+
+st.subheader("📉 Drawdown Duration")
+
+drawdown_periods = (df["Drawdown"] < 0).astype(int)
+
+duration = []
+count = 0
+
+for d in drawdown_periods:
+    if d == 1:
+        count += 1
+    else:
+        if count > 0:
+            duration.append(count)
+            count = 0
+
+if duration:
+    st.write("Longest Drawdown (Trades):", max(duration))
+    st.write("Average Drawdown Length:", round(sum(duration)/len(duration),2))
+# -----------------------------
+# ADVANCED TILT DETECTION
+# -----------------------------
+
+st.subheader("🧠 Advanced Tilt Detection")
+
+loss_streak = 0
+max_streak = 0
+
+for r in df["R"]:
+    if r < 0:
+        loss_streak += 1
+        max_streak = max(max_streak, loss_streak)
+    else:
+        loss_streak = 0
+
+oversized_trades = (df["R"] < -2).sum()
+
+tilt_score = (
+    abs(current_drawdown) * 8 +
+    max_streak * 10 +
+    oversized_trades * 15
+)
+
+tilt_score = min(tilt_score, 100)
+
+st.progress(int(tilt_score))
+
+st.write("Loss Streak:", max_streak)
+st.write("Oversized Trades:", oversized_trades)
+st.write("Tilt Score:", round(tilt_score,1))
+
+if tilt_score < 30:
+    st.success("Psychological State: Calm")
+elif tilt_score < 60:
+    st.warning("Psychological State: Elevated")
+else:
+    st.error("Psychological State: High Risk")
