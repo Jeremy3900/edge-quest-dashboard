@@ -130,7 +130,7 @@ if uploaded_file:
 # SETUP PERFORMANCE ANALYTICS
 # -----------------------------
 
-if "Setup" in df.columns:
+if df is not None and "Setup" in df.columns:
 
     st.subheader("📊 Setup Performance")
 
