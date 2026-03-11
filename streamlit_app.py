@@ -120,3 +120,29 @@ if uploaded_file:
         st.error("State: High Tilt Risk")
 
     st.write("Tilt Score:", round(tilt_score,1))
+# -----------------------------
+# SETUP PERFORMANCE ANALYTICS
+# -----------------------------
+
+if "Setup" in df.columns:
+
+    st.subheader("📊 Setup Performance")
+
+    setup_stats = df.groupby("Setup")["R"].agg(
+        Trades="count",
+        Total_R="sum",
+        Avg_R="mean"
+    ).reset_index()
+
+    st.dataframe(setup_stats)
+
+    import plotly.express as px
+
+    fig_setup = px.bar(
+        setup_stats,
+        x="Setup",
+        y="Total_R",
+        title="Total R by Setup"
+    )
+
+    st.plotly_chart(fig_setup, use_container_width=True)
