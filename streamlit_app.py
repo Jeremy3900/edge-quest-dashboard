@@ -9,7 +9,7 @@ st.sidebar.title("Edge Quest")
 
 uploaded_file = st.sidebar.file_uploader(
     "Upload Trade Log",
-    type=["csv"]
+    type=["csv","xlsx","xls"]
 )
 
 if uploaded_file is None:
@@ -19,7 +19,12 @@ if uploaded_file is None:
 
 else:
 
+    if uploaded_file is not None:
+
+if uploaded_file.name.endswith(".csv"):
     df = pd.read_csv(uploaded_file)
+else:
+    df = pd.read_excel(uploaded_file)
 
     st.title("⚔️ Edge Quest Trading Dashboard")
 
