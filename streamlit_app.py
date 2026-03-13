@@ -3,23 +3,35 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
-df = None
-
 st.set_page_config(page_title="Edge Quest", layout="wide")
+
 st.sidebar.image("20230812_202115_0000.png", width=200)
 st.sidebar.title("Edge Quest")
 
-AttributeError: This app has encountered an error. The original error message is redacted to prevent data leaks. Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app).
-Traceback:
-File "/mount/src/edge-quest-dashboard/streamlit_app.py", line 62, in <module>
-    if "Open" in df.columns and "Date" not in df.columns:
-                 ^^^^^^^^^^
+uploaded_file = st.sidebar.file_uploader(
+    "Upload Trade Log",
+    type=["csv", "xlsx", "xls"]
+)
 
-# Create R column if it doesn't exist
-if df is not None:
+if uploaded_file is None:
+
+    st.title("📊 Edge Quest Trading Dashboard")
+    st.write("Upload a trade log to begin.")
+
+else:
+
+    # LOAD FILE
+    if uploaded_file.name.endswith(".csv"):
+        df = pd.read_csv(uploaded_file)
+    else:
+        df = pd.read_excel(uploaded_file)
+
+    # -----------------------------
+    # CLEAN BROKER EXPORT
+    # -----------------------------
 
     if "Closed PnL" in df.columns:
-        # cleaning and R conversion
+
         df["Closed PnL"] = (
             df["Closed PnL"]
             .astype(str)
@@ -28,38 +40,19 @@ if df is not None:
         )
 
         df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
+
         df = df.dropna(subset=["Closed PnL"])
 
         risk_per_trade = 100
+
         df["R"] = df["Closed PnL"] / risk_per_trade
 
-    if "Open" in df.columns and "Date" not in df.columns:
+    if "Open" in df.columns:
         df["Date"] = pd.to_datetime(df["Open"])
 
-    risk_per_trade = 100  # change to your real risk
-
-    df["R"] = df["Closed PnL"] / risk_per_trade
-
-# Use Open time as trade date
-if df is not None and "Open" in df.columns and "Date" not in df.columns:
-
-    df["Date"] = pd.to_datetime(df["Open"])
-
-    # Clean and convert broker export
-    if "Closed PnL" in df.columns:
-
-        df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
-
-        risk_per_trade = 100  # change if your risk is different
-
-        df["R"] = df["Closed PnL"] / risk_per_trade
-
-    df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
-
-    # convert PnL to R
-    risk_per_trade = 100  # change this to your risk amount
-
-    df["R"] = df["Closed PnL"] / risk_per_trade
+    # -----------------------------
+    # DISPLAY DATA
+    # -----------------------------
 
     st.title("📊 Edge Quest Trading Dashboard")
 
@@ -68,11 +61,13 @@ if df is not None and "Open" in df.columns and "Date" not in df.columns:
 
     if "R" in df.columns:
 
-        # Equity + drawdown
+        # EQUITY
         df["Equity"] = df["R"].cumsum()
+
+        # DRAWDOWN
         df["Drawdown"] = df["Equity"] - df["Equity"].cummax()
 
-        # Core metrics
+        # METRICS
         total_r = df["R"].sum()
         win_rate = (df["R"] > 0).mean() * 100
 
@@ -87,22 +82,37 @@ if df is not None and "Open" in df.columns and "Date" not in df.columns:
         col2.metric("Win Rate", f"{win_rate:.1f}%")
         col3.metric("Expectancy", round(expectancy,2))
 
-        # Equity curve
+        # -----------------------------
+        # EQUITY CURVE
+        # -----------------------------
+
         st.subheader("Equity Curve")
+
         fig = px.line(df, y="Equity")
         st.plotly_chart(fig, use_container_width=True)
 
-        # Drawdown curve
+        # -----------------------------
+        # DRAWDOWN
+        # -----------------------------
+
         st.subheader("Drawdown Curve")
+
         fig2 = px.line(df, y="Drawdown")
         st.plotly_chart(fig2, use_container_width=True)
 
-        # Distribution
+        # -----------------------------
+        # R DISTRIBUTION
+        # -----------------------------
+
         st.subheader("R Distribution")
+
         fig_hist = px.histogram(df, x="R", nbins=20)
         st.plotly_chart(fig_hist, use_container_width=True)
 
-        # Monte Carlo
+        # -----------------------------
+        # MONTE CARLO
+        # -----------------------------
+
         st.subheader("Monte Carlo Simulation")
 
         simulations = 100
@@ -111,7 +121,9 @@ if df is not None and "Open" in df.columns and "Date" not in df.columns:
         equity_paths = []
 
         for i in range(simulations):
+
             sample = np.random.choice(df["R"], trades)
+
             equity_paths.append(np.cumsum(sample))
 
         mc_df = pd.DataFrame(equity_paths).T
@@ -119,9 +131,11 @@ if df is not None and "Open" in df.columns and "Date" not in df.columns:
         fig_mc = px.line(mc_df)
         st.plotly_chart(fig_mc, use_container_width=True)
 
-        # Efficiency
-        if "MAE" in df.columns and "MFE" in df.columns:
+        # -----------------------------
+        # MAE / MFE EFFICIENCY
+        # -----------------------------
 
+        if "MAE" in df.columns and "MFE" in df.columns:
 
             st.subheader("Trade Efficiency")
 
@@ -133,39 +147,32 @@ if df is not None and "Open" in df.columns and "Date" not in df.columns:
             )
 
             st.plotly_chart(fig_eff, use_container_width=True)
-# -----------------------------
-# Risk Guardian
-# -----------------------------
 
-if uploaded_file is not None and "Drawdown" in df.columns:
+        # -----------------------------
+        # RISK GUARDIAN
+        # -----------------------------
 
-    st.subheader("🛡 Risk Guardian")
+        st.subheader("🛡 Risk Guardian")
 
-    max_allowed_drawdown = -10
+        max_allowed_drawdown = -10
 
-    current_drawdown = df["Drawdown"].min()
+        current_drawdown = df["Drawdown"].min()
 
-    remaining_risk = max_allowed_drawdown - current_drawdown
+        remaining_risk = max_allowed_drawdown - current_drawdown
 
-    col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns(3)
 
-    col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
-    col2.metric("Current DD", round(current_drawdown,2))
-    col3.metric("Remaining Risk", round(remaining_risk,2))
+        col1.metric("Max Allowed DD", f"{max_allowed_drawdown}R")
+        col2.metric("Current DD", round(current_drawdown,2))
+        col3.metric("Remaining Risk", round(remaining_risk,2))
 
-import numpy as np
-if np.isnan(current_drawdown):
-    risk_percent = 0
-else:
-    risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
+        risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
 
-st.progress(int(risk_percent * 100))
+        st.progress(int(risk_percent * 100))
 
-if risk_percent < 0.5:
-    st.success("Risk Status: Safe")
-
-elif risk_percent < 0.8:
-    st.warning("Risk Status: Elevated")
-
-else:
-    st.error("Risk Status: Danger Zone")
+        if risk_percent < 0.5:
+            st.success("Risk Status: Safe")
+        elif risk_percent < 0.8:
+            st.warning("Risk Status: Elevated")
+        else:
+            st.error("Risk Status: Danger Zone")
