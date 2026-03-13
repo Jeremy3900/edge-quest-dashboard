@@ -19,10 +19,28 @@ if uploaded_file is None:
 
 else:
 
+   if uploaded_file:
+
     if uploaded_file.name.endswith(".csv"):
         df = pd.read_csv(uploaded_file)
     else:
         df = pd.read_excel(uploaded_file)
+
+    # Clean and convert broker export
+    if "Closed PnL" in df.columns:
+
+        df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
+
+        risk_per_trade = 100  # change if your risk is different
+
+        df["R"] = df["Closed PnL"] / risk_per_trade
+
+    df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
+
+    # convert PnL to R
+    risk_per_trade = 100  # change this to your risk amount
+
+    df["R"] = df["Closed PnL"] / risk_per_trade
 
     st.title("⚔️ Edge Quest Trading Dashboard")
 
