@@ -25,6 +25,33 @@ else:
         df = pd.read_csv(uploaded_file)
     else:
         df = pd.read_excel(uploaded_file)
+# -----------------------------
+# Normalize broker export
+# -----------------------------
+
+# Convert Closed PnL to numeric
+if "Closed PnL" in df.columns:
+
+    df["Closed PnL"] = (
+        df["Closed PnL"]
+        .astype(str)
+        .str.replace("$", "", regex=False)
+        .str.replace(",", "", regex=False)
+    )
+
+    df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
+
+# Create R column if it doesn't exist
+if "R" not in df.columns and "Closed PnL" in df.columns:
+
+    risk_per_trade = 100  # change to your real risk
+
+    df["R"] = df["Closed PnL"] / risk_per_trade
+
+# Use Open time as trade date
+if "Open" in df.columns and "Date" not in df.columns:
+
+    df["Date"] = pd.to_datetime(df["Open"])
 
     # Clean and convert broker export
     if "Closed PnL" in df.columns:
