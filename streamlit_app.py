@@ -135,7 +135,6 @@ if uploaded_file is not None and "Drawdown" in df.columns:
     col3.metric("Remaining Risk", round(remaining_risk,2))
 
 import numpy as np
-
 if np.isnan(current_drawdown):
     risk_percent = 0
 else:
@@ -143,9 +142,11 @@ else:
 
 st.progress(int(risk_percent * 100))
 
-    if risk_percent < 0.5:
-        st.success("Risk Status: Safe")
-    elif risk_percent < 0.8:
-        st.warning("Risk Status: Elevated")
-    else:
-        st.error("Risk Status: Danger Zone")
+if risk_percent < 0.5:
+    st.success("Risk Status: Safe")
+
+elif risk_percent < 0.8:
+    st.warning("Risk Status: Elevated")
+
+else:
+    st.error("Risk Status: Danger Zone")
