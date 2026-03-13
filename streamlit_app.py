@@ -2,29 +2,80 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
+import time
 
 st.set_page_config(page_title="Edge Quest", layout="wide")
 
 st.sidebar.image("20230812_202115_0000.png", width=200)
 st.sidebar.title("Edge Quest")
 
-uploaded_file = st.sidebar.file_uploader(
-    "Upload Trade Log",
-    type=["csv", "xlsx", "xls"]
-)
+live_mode = st.sidebar.checkbox("Live Mode")
 
-if uploaded_file is None:
+if live_mode:
 
-    st.title("📊 Edge Quest Trading Dashboard")
-    st.write("Upload a trade log to begin.")
+    st.sidebar.write("Reading live trade log...")
+
+    file_path = st.sidebar.text_input(
+        "Trade Log Path",
+        "C:/Users/YOU/Documents/jigsaw_trades.csv"
+    )
+
+    try:
+
+        df = pd.read_csv(file_path)
+
+        st.success("Live feed connected")
+
+        time.sleep(5)
+        st.experimental_rerun()
+
+    except:
+
+        st.warning("Waiting for trade log...")
 
 else:
 
-    # LOAD FILE
-    if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = pd.read_excel(uploaded_file)
+live_mode = st.sidebar.checkbox("Live Trading Mode")
+
+if live_mode:
+
+    st.sidebar.write("Live trade feed enabled")
+
+    file_path = st.sidebar.text_input(
+        "Trade Log Path",
+        "C:/Users/YOU/Documents/trades.csv"
+    )
+
+    try:
+        df = pd.read_csv(file_path)
+
+        st.sidebar.success("Live feed connected")
+
+        time.sleep(5)
+        st.experimental_rerun()
+
+    except:
+        st.sidebar.warning("Waiting for trade log...")
+
+else:
+
+    uploaded_file = st.sidebar.file_uploader(
+        "Upload Trade Log",
+        type=["csv", "xlsx", "xls"]
+    )
+
+    if uploaded_file:
+
+        if uploaded_file.name.endswith(".csv"):
+            df = pd.read_csv(uploaded_file)
+        else:
+            df = pd.read_excel(uploaded_file)
+
+    if uploaded_file:
+        if uploaded_file.name.endswith(".csv"):
+            df = pd.read_csv(uploaded_file)
+        else:
+            df = pd.read_excel(uploaded_file)
 
     # -----------------------------
     # CLEAN BROKER EXPORT
