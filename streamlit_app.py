@@ -43,7 +43,11 @@ else:
         df = df.dropna(subset=["Closed PnL"])
 
         risk_per_trade = 100
+
         df["R"] = df["Closed PnL"] / risk_per_trade
+
+    st.subheader("Trade Log")
+    st.dataframe(df)
 
 # Create R column if it doesn't exist
 if "R" not in df.columns and "Closed PnL" in df.columns:
