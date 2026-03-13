@@ -14,32 +14,36 @@ uploaded_file = st.sidebar.file_uploader(
 
 if uploaded_file is None:
 
-    st.title("📊 Edge Quest Trading Dashboard")
+    st.title("⚔️ Edge Quest Trading Dashboard")
     st.write("Upload a trade log to begin.")
 
 else:
 
-   if uploaded_file:
-
+    # Load file
     if uploaded_file.name.endswith(".csv"):
         df = pd.read_csv(uploaded_file)
     else:
         df = pd.read_excel(uploaded_file)
-# -----------------------------
-# Normalize broker export
-# -----------------------------
 
-# Convert Closed PnL to numeric
-if "Closed PnL" in df.columns:
+    # -----------------------------
+    # Normalize broker export
+    # -----------------------------
 
-    df["Closed PnL"] = (
-        df["Closed PnL"]
-        .astype(str)
-        .str.replace("$", "", regex=False)
-        .str.replace(",", "", regex=False)
-    )
+    if "Closed PnL" in df.columns:
 
-    df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
+        df["Closed PnL"] = (
+            df["Closed PnL"]
+            .astype(str)
+            .str.replace("$","",regex=False)
+            .str.replace(",","",regex=False)
+        )
+
+        df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
+
+        df = df.dropna(subset=["Closed PnL"])
+
+        risk_per_trade = 100
+        df["R"] = df["Closed PnL"] / risk_per_trade
 
 # Create R column if it doesn't exist
 if "R" not in df.columns and "Closed PnL" in df.columns:
