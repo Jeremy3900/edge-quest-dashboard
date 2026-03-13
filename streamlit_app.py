@@ -134,9 +134,14 @@ if uploaded_file is not None and "Drawdown" in df.columns:
     col2.metric("Current DD", round(current_drawdown,2))
     col3.metric("Remaining Risk", round(remaining_risk,2))
 
+import numpy as np
+
+if np.isnan(current_drawdown):
+    risk_percent = 0
+else:
     risk_percent = min(abs(current_drawdown / max_allowed_drawdown), 1)
 
-    st.progress(int(risk_percent * 100))
+st.progress(int(risk_percent * 100))
 
     if risk_percent < 0.5:
         st.success("Risk Status: Safe")
