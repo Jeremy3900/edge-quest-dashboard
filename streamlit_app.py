@@ -9,32 +9,6 @@ st.set_page_config(page_title="Edge Quest", layout="wide")
 st.sidebar.image("20230812_202115_0000.png", width=200)
 st.sidebar.title("Edge Quest")
 
-live_mode = st.sidebar.checkbox("Live Mode")
-
-if live_mode:
-
-    st.sidebar.write("Reading live trade log...")
-
-    file_path = st.sidebar.text_input(
-        "Trade Log Path",
-        "C:/Users/YOU/Documents/jigsaw_trades.csv"
-    )
-
-    try:
-
-        df = pd.read_csv(file_path)
-
-        st.success("Live feed connected")
-
-        time.sleep(5)
-        st.experimental_rerun()
-
-    except:
-
-        st.warning("Waiting for trade log...")
-
-else:
-
 live_mode = st.sidebar.checkbox("Live Trading Mode")
 
 if live_mode:
@@ -66,12 +40,6 @@ else:
 
     if uploaded_file:
 
-        if uploaded_file.name.endswith(".csv"):
-            df = pd.read_csv(uploaded_file)
-        else:
-            df = pd.read_excel(uploaded_file)
-
-    if uploaded_file:
         if uploaded_file.name.endswith(".csv"):
             df = pd.read_csv(uploaded_file)
         else:
