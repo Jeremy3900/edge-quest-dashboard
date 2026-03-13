@@ -9,30 +9,17 @@ st.set_page_config(page_title="Edge Quest", layout="wide")
 st.sidebar.image("20230812_202115_0000.png", width=200)
 st.sidebar.title("Edge Quest")
 
-uploaded_file = st.sidebar.file_uploader(
-    "Upload Trade Log",
-    type=["csv","xlsx","xls"]
-)
+AttributeError: This app has encountered an error. The original error message is redacted to prevent data leaks. Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app).
+Traceback:
+File "/mount/src/edge-quest-dashboard/streamlit_app.py", line 62, in <module>
+    if "Open" in df.columns and "Date" not in df.columns:
+                 ^^^^^^^^^^
 
-if uploaded_file is None:
-
-    st.title("⚔️ Edge Quest Trading Dashboard")
-    st.write("Upload a trade log to begin.")
-
-else:
-
-    # Load file
-    if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = pd.read_excel(uploaded_file)
-
-    # -----------------------------
-    # Normalize broker export
-    # -----------------------------
+# Create R column if it doesn't exist
+if df is not None:
 
     if "Closed PnL" in df.columns:
-
+        # cleaning and R conversion
         df["Closed PnL"] = (
             df["Closed PnL"]
             .astype(str)
@@ -41,25 +28,20 @@ else:
         )
 
         df["Closed PnL"] = pd.to_numeric(df["Closed PnL"], errors="coerce")
-
         df = df.dropna(subset=["Closed PnL"])
 
         risk_per_trade = 100
-
         df["R"] = df["Closed PnL"] / risk_per_trade
 
-    st.subheader("Trade Log")
-    st.dataframe(df)
-
-# Create R column if it doesn't exist
-if df is not None and "R" not in df.columns and "Closed PnL" in df.columns:
+    if "Open" in df.columns and "Date" not in df.columns:
+        df["Date"] = pd.to_datetime(df["Open"])
 
     risk_per_trade = 100  # change to your real risk
 
     df["R"] = df["Closed PnL"] / risk_per_trade
 
 # Use Open time as trade date
-if "Open" in df.columns and "Date" not in df.columns:
+if df is not None and "Open" in df.columns and "Date" not in df.columns:
 
     df["Date"] = pd.to_datetime(df["Open"])
 
@@ -79,7 +61,7 @@ if "Open" in df.columns and "Date" not in df.columns:
 
     df["R"] = df["Closed PnL"] / risk_per_trade
 
-    st.title("⚔️ Edge Quest Trading Dashboard")
+    st.title("📊 Edge Quest Trading Dashboard")
 
     st.subheader("Trade Log")
     st.dataframe(df)
