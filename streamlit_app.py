@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
+df = None
+
 st.set_page_config(page_title="Edge Quest", layout="wide")
 st.sidebar.image("20230812_202115_0000.png", width=200)
 st.sidebar.title("Edge Quest")
@@ -50,7 +52,7 @@ else:
     st.dataframe(df)
 
 # Create R column if it doesn't exist
-if "R" not in df.columns and "Closed PnL" in df.columns:
+if df is not None and "R" not in df.columns and "Closed PnL" in df.columns:
 
     risk_per_trade = 100  # change to your real risk
 
